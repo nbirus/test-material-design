@@ -1,7 +1,7 @@
 import Resources from '@/resources'
-import SWorker from 'simple-web-worker'
 import { get, camelCase } from 'lodash'
-let resourceWorker = SWorker.create()
+// import SWorker from 'simple-web-worker'
+// let resourceWorker = SWorker.create()
 
 /**
  * @param {string} resource

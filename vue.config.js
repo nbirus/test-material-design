@@ -1,4 +1,14 @@
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const webpack = require('webpack')
+
 module.exports = {
+  productionSourceMap: false,
+  configureWebpack: {
+    plugins: [
+      // new BundleAnalyzerPlugin(),
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    ],
+  },
   css: {
     loaderOptions: {
       sass: {

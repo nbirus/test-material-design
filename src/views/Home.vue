@@ -1,21 +1,20 @@
 <template>
   <div class="test">
 
-    <v-text-field v-model="name" />
+    <v-text-field v-model="name" label="Name" style="width: 200px"/>
 
-    <!-- <data-wrapper :data="model" v-slot="{ _state: _asyncState }"> -->
-      <data-wrapper :data="model" :params="{ name }" v-slot="{ _state }">
-        <state-handler v-bind="_state">
-          <div key="loading" slot="loading">load</div>
-          <div key="error" slot="error">{{_state.error}}</div>
-          <data-table 
-            :headers="headers"
-            :model="_state.data"
-            hide-default-footer
-          />
-        </state-handler>
-      </data-wrapper>
-    <!-- </data-wrapper> -->
+    <data-wrapper :data="model" :params="{ name }" v-slot="{ _state }">
+      <state-handler v-bind="_state" :loading="_state.loading" ignore-loading>
+        <div key="error" slot="error">{{_state.error}}</div>
+        <data-table 
+          class="elevation-1"
+          :headers="headers"
+          :model="_state.data"
+          :loading="_state.loading"
+          no-pagination
+        />
+      </state-handler>
+    </data-wrapper>
 
   </div>
 </template>

@@ -14,14 +14,14 @@ export default {
     disabled: Boolean,
     debounce: {
       type: Number,
-      default: 10,
+      default: 100,
     },
   },
   data() {
     return {
       request: undefined,
       returnData: undefined,
-      loading: false,
+      loading: true,
       error: undefined,
     }
   },

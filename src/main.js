@@ -3,8 +3,18 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify';
-import './global'
 import './styles/main.scss'
+import './styles/overrides.scss'
+
+// filters
+import * as Filters from '@/services/FilterService'
+for (const filter in Filters) {
+  Vue.filter(filter, Filters[filter])
+}
+
+// helpers
+import '@/global'
+import '@/services/HelperService'
 
 Vue.config.productionTip = false
 

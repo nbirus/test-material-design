@@ -7,11 +7,15 @@ const service = axios.create({
 
 
 /**
- * Base request, pass a valid config object
+ * Base request, pass a valid config object.  
  * @param {object} config
  */
-export function request(config) {
-  return service.get(config.endpoint, config)
+export function request(config, formatter = (r) => r) {
+  return new Promise((resolve, reject) => {
+    service.get(config.endpoint, config)
+      .then(response => resolve(formatter(response)))
+      .catch(reject)
+  })
 }
 
 /**
@@ -26,24 +30,7 @@ export function requestResource(resource, params) {
   const config = getResourceConfig(resource, params)
   const formatter = getResourceFormatter(resource)
 
-  // set up intercepter to format response
-  setFormatterIntercepter(formatter)
-
   // make request
-  return request(config)
-}
+  return request(config, formatter)
 
-
-// helper
-function setFormatterIntercepter(formatter) {
-  service.interceptors.response.use(
-    response => {
-      return new Promise((resolve, reject) => {
-        formatter(response)
-          .then(resolve)
-          .catch(reject)
-      })
-    },
-    error => Promise.reject(error),
-  )
 }

@@ -1,6 +1,5 @@
 @import '~vuetify/src/styles/styles.sass';
 
-
 ////////////////////////
 // font
 $body-font-family: 'Source Sans Pro', sans-serif;
@@ -8,6 +7,17 @@ $font-size-root: 16px;
 
 
 ////////////////////////
+// table
+$data-table-scroll-bar-width: 17px !default;
+$data-table-regular-row-height: 50px !default;
+$data-table-regular-header-height: 40px !default;
+$data-table-dense-row-height: 24px !default;
+$data-table-dense-header-height: 32px !default;
+
+////////////////////////
 // color
 $test: black;
 
+// $shadow-key-umbra-opacity: rgba(0, 0, 0, 0);
+// $shadow-key-penumbra-opacity: rgba(0, 0, 0, 0);
+// $shadow-key-ambient-opacity: rgba(0, 0, 0, 0);

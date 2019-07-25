@@ -1,17 +1,26 @@
-<template>
-  <transition :name="transitionName" mode="out-in">
+<template functional>
+  <transition>
+
+    <!-- LOADING: {{(!props.ignoreLoading && props.loading) || (props.keepAlive && props.data !== undefined)}} -->
+    <!-- ERROR: {{(!props.ignoreError && props.error !== undefined)}} -->
 
     <!-- loading -->
-    <default-loading v-if="loadingCondition && loadingDefault"></default-loading>
-    <slot v-else-if="loadingCondition" name="loading"></slot>
+    <component 
+      :is="injections.components.DefaultLoading"
+      v-if="(slots().default === undefined) && (!props.ignoreLoading && props.loading) || (props.keepAlive && props.data !== undefined)"
+    />
+    <slot name="loading" v-else-if="(!props.ignoreLoading && props.loading) || (props.keepAlive && props.data !== undefined)" ></slot>
 
-    <!-- error -->
-    <default-error :error="error" :refresh="refresh" v-else-if="errorCondition && errorDefault"></default-error>
-    <slot v-else-if="errorCondition" name="error"></slot>
+    <!-- loading -->
+    <component 
+      :is="injections.components.DefaultError"
+      v-else-if="(!props.ignoreError && props.error !== undefined) && (slots().error === undefined)"
+    />
+    <slot name="error" v-else-if="(!props.ignoreError && props.error !== undefined)"></slot>
 
     <!-- response -->
     <slot v-else></slot>
-    
+
   </transition>
 </template>
 
@@ -21,7 +30,15 @@ import DefaultError from './Error'
 
 export default {
   name: 'state-handler',
-  components: { DefaultLoading, DefaultError },
+  inject: {
+    components: {
+      default: {
+        DefaultLoading,
+        DefaultError,
+      }
+    }
+  },
+  inheritAttrs: false,
   props: {
     data: [Object, Array],
     loading: Boolean,
@@ -29,36 +46,16 @@ export default {
     refresh: Function,
     ignoreLoading: Boolean,
     ignoreError: Boolean,
-    keepResponseAlive: Boolean,
+    keepAlive: Boolean,
     transitionName: {
       type: String,
       default: 'fade'
     },
   },
-  computed: {
-
-    loadingCondition() {
-      if (this.keepResponseAlive && this.hasResponse) {
-        return false
-      }
-      else {
-        return !this.ignoreLoading && this.loading
-      }
-    },
-    errorCondition() {
-      return !this.ignoreError && this.$h.truthy(this.error)
-    },
-
-    loadingDefault() {
-      return !this.$slots.hasOwnProperty('loading')
-    },
-    errorDefault() {
-      return !this.$slots.hasOwnProperty('error')
-    },
-    hasResponse() {
-      return this.$h.truthy(this.data)
-    },
-
-  },
 }
 </script>
+
+
+
+
+

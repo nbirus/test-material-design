@@ -1,17 +1,21 @@
 <template>
   <div class="test">
 
-    <data-wrapper resource="patients" :params="params" v-slot="{ _state, _refresh }">
-      <state-handler>
-        
-      </state-handler>
-    </data-wrapper>
+    <v-text-field v-model="name" />
 
-    <data-table 
-      :headers="headers"
-      :model="model"
-      hide-default-footer
-    />
+    <!-- <data-wrapper :data="model" v-slot="{ _state: _asyncState }"> -->
+      <data-wrapper :data="model" :params="{ name }" v-slot="{ _state }">
+        <state-handler v-bind="_state">
+          <div key="loading" slot="loading">load</div>
+          <div key="error" slot="error">{{_state.error}}</div>
+          <data-table 
+            :headers="headers"
+            :model="_state.data"
+            hide-default-footer
+          />
+        </state-handler>
+      </data-wrapper>
+    <!-- </data-wrapper> -->
 
   </div>
 </template>
@@ -25,10 +29,11 @@ export default {
   },
   data: () => ({
     headers: [
-      { text: 'Carbs (g)', value: 'carbs' },
-      { text: 'Protein (g)', value: 'protein' },
-      { text: 'Iron (%)', value: 'iron' },
+      { text: 'Carbs', value: 'name' },
+      { text: 'Protein', value: 'protein' },
+      { text: 'Iron', value: 'iron' },
     ],
+    name: '',
     model: [
       {
         name: 'Frozen Yogurt',
@@ -116,5 +121,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.test {
+  padding: 3rem;
+}
 </style>

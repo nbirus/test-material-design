@@ -28,45 +28,56 @@ export function objectSearch(data, params) {
   })
 }
 export function objectSearchWorker(args) {
-  try {
 
-    // get vars from json input
-    let data = JSON.parse(args)[0]
-    let params = JSON.parse(args)[1]
-    let searchKeys = JSON.parse(args)[2]
+  // get vars from json input
+  let data = JSON.parse(args)[0]
+  let params = JSON.parse(args)[1]
+  let searchKeys = JSON.parse(args)[2]
 
-    // loop over each key, and compare against corrisponding row value
-    searchKeys.forEach(key => {
+  // loop over each key, and compare against corrisponding row value
+  searchKeys.forEach(key => {
+    if (!['include', 'size', 'from', 'to', 'sort', 'order'].includes(key)) {
       data = data.filter(row => {
 
         // get compare values
-        const value = row[key]
+        const rowValue = row[key]
         const searchValue = params[key]
 
+
         // search
+        if (searchValue === undefined) {
+          return true
+        }
         if (key === '_keyword') {
           return rowSearch(row, searchValue)
-        }
-        else if (isArray(searchValue)) {
-          return searchValue.every(s => value.search(s) !== -1)
-        }
-        else {
-          return value.search(searchValue) !== -1
+        } else if (rowValue === undefined) {
+          return false
+        } else if (isArray(searchValue)) {
+          return searchValue.some(s => stringCompare(rowValue, s))
+        } else if (isArray(rowValue)) {
+          return rowValue.some(s => stringCompare(s, searchValue))
+        } else {
+          return stringCompare(rowValue, searchValue)
         }
       })
-    })
+    }
+  })
 
-    return data
-  }
-  catch(e) {
-    console.warn('PARSE ERROR', e);
-  }
+  return data
+
   // helper
-  function isArray(value) {
-    return !!value && value.constructor === Array
-  }
   function rowSearch(row, searchValue) {
-    return objectValues(row).some(value => value.search(searchValue) !== -1)
+    return objectValues(row).some(value => {
+      if (value === undefined) {
+        return false
+      } else if (isObject(value)) {
+        return false
+      } else if (isArray(value)) {
+        return value.some(v => stringCompare(v, searchValue))
+      } else {
+        return stringCompare(value, searchValue)
+      }
+    })
   }
   function objectValues(obj) {
     var res = [];
@@ -76,6 +87,19 @@ export function objectSearchWorker(args) {
       }
     }
     return res;
+  }
+  function isObject(value) {
+    return (!!value) && (value.constructor === Object)
+  }
+  function isArray(value) {
+    return !!value && value.constructor === Array
+  }
+  function stringCompare(value, searchValue) {
+    if (value !== undefined) {
+      return value.toString().toLowerCase().search(searchValue.toLowerCase()) !== -1
+    } else {
+      return false
+    }
   }
 }
 
@@ -104,12 +128,15 @@ export function objectSort(data, sort) {
 export function objectSortWorker(args) {
   let data = JSON.parse(args)[0]
   let sort = JSON.parse(args)[1]
-  let sortFunc = sort.order === 'ascending' ? sortAsc : sortDesc
 
-  if (sort.key !== undefined) {
-    data = data.sort(sortFunc)
+  if (sort !== null) {
+    let sortFunc = sort.order === 'ascending' ? sortAsc : sortDesc
+
+    if (sort.key !== undefined) {
+      data = data.sort(sortFunc)
+    }
   }
-  
+
   return data
 
   // helpers

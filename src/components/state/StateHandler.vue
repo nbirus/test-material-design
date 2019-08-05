@@ -1,43 +1,13 @@
-<template functional>
-  <transition>
 
-    <!-- LOADING: {{(!props.ignoreLoading && props.loading) || (props.keepAlive && props.data !== undefined)}} -->
-    <!-- ERROR: {{(!props.ignoreError && props.error !== undefined)}} -->
-
-    <!-- loading -->
-    <component 
-      :is="injections.components.DefaultLoading"
-      v-if="(slots().default === undefined) && (!props.ignoreLoading && props.loading) || (props.keepAlive && props.data !== undefined)"
-    />
-    <slot name="loading" v-else-if="(!props.ignoreLoading && props.loading) || (props.keepAlive && props.data !== undefined)" ></slot>
-
-    <!-- loading -->
-    <component 
-      :is="injections.components.DefaultError"
-      v-else-if="(!props.ignoreError && props.error !== undefined) && (slots().error === undefined)"
-    />
-    <slot name="error" v-else-if="(!props.ignoreError && props.error !== undefined)"></slot>
-
-    <!-- response -->
-    <slot v-else></slot>
-
-  </transition>
-</template>
 
 <script>
 import DefaultLoading from './Loading'
 import DefaultError from './Error'
+import { truthy } from '@/services/CommonsService'
 
 export default {
   name: 'state-handler',
-  inject: {
-    components: {
-      default: {
-        DefaultLoading,
-        DefaultError,
-      }
-    }
-  },
+  functional: true,
   inheritAttrs: false,
   props: {
     data: [Object, Array],
@@ -47,15 +17,36 @@ export default {
     ignoreLoading: Boolean,
     ignoreError: Boolean,
     keepAlive: Boolean,
+    noTransition: Boolean,
     transitionName: {
       type: String,
       default: 'fade'
     },
   },
+  render(createElement, { injections, props, slots }) {
+
+    let child = slots().default
+
+    // loading 
+    if ((!props.ignoreLoading && props.loading) || (props.keepAlive && truthy(props.data))) {
+      child = slots().loading || createElement(DefaultLoading, { props: { key: 'loading' } } )
+    }
+    // error 
+    else if (!props.ignoreError && truthy(props.error)) {
+      child = slots().error || createElement(DefaultError, { props: { key: 'error' } } )
+    }
+
+    return createElement(
+      'transition', 
+      { 
+        props: {
+          name: props.transitionName,
+          appear: !props.noTransition,
+          mode: 'out-in',
+        } 
+      },
+      [ child ],
+    )
+  },
 }
 </script>
-
-
-
-
-

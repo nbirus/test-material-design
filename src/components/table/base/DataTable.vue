@@ -10,23 +10,10 @@
       :dense="dense"
       loading-text=""
       hide-default-footer
-      :page.sync="page"
-      :items-per-page="20"
-      @page-count="pageCount=$event"
+      :page="page"
+      :items-per-page="itemsPerPage"
+      @page-count="$emit('page-count', $event)"
     ></v-data-table>
-
-    <!-- custom footer -->
-    <div class="text-center pt-2" v-if="!noPagination">
-      <v-pagination v-model="page" :length="pageCount"></v-pagination>
-      <!-- <v-text-field
-        :value="pageSize"
-        label="Items per page"
-        type="number"
-        min="-1"
-        max="15"
-        @input="pageSize=$event"
-      ></v-text-field> -->
-    </div>
 
     <!-- loading overlay -->
     <v-overlay color="white" light absolute :value="loading">
@@ -37,8 +24,8 @@
         :size="42"
         :width="2"
       />
-
     </v-overlay>
+
   </div>
 </template>
 
@@ -53,13 +40,12 @@ export default {
     dense: Boolean,
     minHeight: String,
     noPagination: Boolean,
+    page: Number,
+    itemsPerPage: Number,
   },
   data(){
     return {
       defaultMinHeight: this.dense ? '320px' : '500px',
-      page: 1,
-      pageSize: !this.noPagination ? 10 : 10000,
-      pageCount: 0,
     } 
   }
 }

@@ -38,8 +38,9 @@
 </template>
 
 <script>
-import { VTextField } from 'vuetify/lib'
 import cloneDeep from 'lodash/cloneDeep'
+import { mapGetters, mapActions } from 'vuex'
+import { VTextField } from 'vuetify/lib'
 
 export default {
   name: 'form-builder',
@@ -52,6 +53,7 @@ export default {
     model: Object,
     submitOnChange: Boolean,
     submitOnMount: Boolean,
+    persist: Boolean,
   },
   data() {
     return {
@@ -64,17 +66,34 @@ export default {
     event: 'submit',
   },
   created() {
-    this.modelReference = cloneDeep(this.model)
+    if (this.persist) {
+      let persistedModel = this.getModel(this.id)
+      this.modelReference = cloneDeep(persistedModel || this.model)
+    }
+    else {
+      this.modelReference = cloneDeep(this.model)
+    }
   },
   mounted() {
     if (this.submitOnMount) {
-      this.submit(this.modelReference)
+      this.$nextTick(this.submit)
     }
   },
+  computed: {
+    ...mapGetters('form', ['getModel'])
+  },
   methods: {
-    submit(model) {
+    ...mapActions('form', ['setModel']),
+    submit(model = this.modelReference) {
       if (this.$refs.form.validate()) {
+
+        // emmit result
         this.$emit('submit', cloneDeep(model))
+
+        // set persisted model
+        if (this.persist) {
+          this.setModel({ id: this.id, model })
+        }
       }
     },
     reset() {

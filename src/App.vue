@@ -23,9 +23,6 @@ export default {
     AppNavBar,
     AppNavAside,
   },
-  data: () => ({
-    drawer: false,
-  })
 }
 </script>
 

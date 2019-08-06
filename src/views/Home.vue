@@ -1,19 +1,20 @@
 <template>
-  <div class="test">
+  <div class="test" v-if="false">
 
-    <form-builder 
+    <!-- <form-builder 
+      id="home-form"
       :form="form"
       v-model="formModel"
-    />
-    <form-builder 
-      :form="form"
-      v-model="formModel"
-    />
+      persist
+      submitOnMount
+      submitOnChange
+    /> -->
 
-    <pre>{{formModel}}</pre>
+  <br>
+  <br>
+  <br>
 
   <v-text-field v-model="name" outlined label="Keyword" style="width: 200px"/>
-
   <v-carousel 
     :height="800" 
     class="carousel" 
@@ -30,25 +31,18 @@
         color="white"
         height="100%"
         tile
+        light
       >
 
         <div class="card-grid">
-          <v-card class="card elevation-3" v-for="i in 9" :key="`${i}${color}`">
-            
-            <data-wrapper :data="model" :params="{ _keyword: name }" v-slot="{ _state }">
-              <state-handler v-bind="_state" :loading="_state.loading" ignore-loading>
-                <div key="error" slot="error">{{_state.error}}</div>
-                <data-table 
-                  class="elevation-3"
-                  :headers="headers"
-                  :model="_state.data"
-                  :loading="_state.loading"
-                  no-pagination
-                  light
-                />
-              </state-handler>
-            </data-wrapper>
-
+          <v-card class="card elevation-3" v-for="i in 6" :key="`${i}${color}`">
+            <data-table-wrapper
+              :data="model"
+              :params="{ _keyword: name, ...formModel }"
+              :headers="headers"
+              :page-size="5"
+              dense
+            />
           </v-card>
         </div>
         
@@ -56,55 +50,47 @@
     </v-carousel-item>
   </v-carousel>
 
+  <data-table-wrapper
+    :data="model"
+    :params="{ _keyword: name, ...formModel }"
+    :headers="headers"
+  />
+  
     <!-- <state-handler :loading="loading" :error="''">
       <div key="loading" slot="loading">LOADING</div>
       <div slot="error">ERROR</div>
       <div key="response">RESPONSE</div>
     </state-handler> -->
 
-    <data-wrapper :data="model" :params="{ _keyword: name }" v-slot="{ _state }">
-      <state-handler v-bind="_state" :loading="_state.loading" ignore-loading>
-        <div key="error" slot="error">{{_state.error}}</div>
-        <data-table 
-          class="elevation-1"
-          :headers="headers"
-          :model="_state.data"
-          :loading="_state.loading"
-          no-pagination
-        />
-      </state-handler>
-    </data-wrapper>
-
   </div>
 </template>
 
 <script>
-import DataTable from '../components/table/DataTable'
+import DataTableWrapper from '../components/table/wrappers/DataTableWrapper'
 import FormBuilder from '../components/form/FormBuilder'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
-    DataTable,
+    DataTableWrapper,
     FormBuilder,
   },
   data: () => ({
     form: [
       {
         type: 'text-field',
-        id: 'email',
+        id: 'name',
         props: {
           label: 'Email',
           placeholder: 'Enter a keyword',
-          required: true,
           rules: [
-            v => !!v || 'Name is required',
-            v => (v && v.length <= 10) || 'Name must be less than 10 characters',
+            v => (v.length <= 10) || 'Name must be less than 10 characters',
           ],
         },
       },
     ],
     formModel: {
-      email: ''
+      name: '',
     },
     loading: true,
     headers: [
@@ -208,7 +194,7 @@ export default {
     setTimeout(() => {
       this.loading = false
     }, 1000);
-  }
+  },
 };
 </script>
 
@@ -230,7 +216,7 @@ export default {
 
   .card {
     background-color: white;
-    height: 200px;
+    height: 100%;
     overflow: hidden;
   }
 }

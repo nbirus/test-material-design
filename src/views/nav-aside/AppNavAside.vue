@@ -61,22 +61,22 @@ export default {
         },
         {
           label: 'Laboratories',
-          path: 'patients',
+          path: 'Laboratories',
           icon: 'fas fa-hospital',
         },
         {
           label: 'Treatment Arms',
-          path: 'patients',
+          path: 'ta',
           icon: 'fas fa-book',
         },
         {
           label: 'Analytics',
-          path: 'patients',
+          path: 'a',
           icon: 'fas fa-chart-pie',
         },
         {
           label: 'Help',
-          path: 'patients',
+          path: 'h',
           icon: 'fas fa-question-circle',
         },
       ],

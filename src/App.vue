@@ -10,18 +10,23 @@
       <router-view />
     </v-content>
 
+    <!-- top level components -->
+    <session-modal />
+
   </v-app>
 </template>
 
 <script>
 import AppNavBar from '@/views/navbar/AppNavBar'
 import AppNavAside from '@/views/nav-aside/AppNavAside'
+import SessionModal from '@/views/session/SessionModal'
 
 export default {
   name: 'app',
   components: { 
     AppNavBar,
     AppNavAside,
+    SessionModal,
   },
 }
 </script>

@@ -1,5 +1,7 @@
 <template>
-  <div class="test" v-if="false">
+  <div class="test">
+
+    <v-btn @click="logout">Logout</v-btn>
 
     <!-- <form-builder 
       id="home-form"
@@ -14,7 +16,7 @@
   <br>
   <br>
 
-  <v-text-field v-model="name" outlined label="Keyword" style="width: 200px"/>
+  <!-- <v-text-field v-model="name" outlined label="Keyword" style="width: 200px"/>
   <v-carousel 
     :height="800" 
     class="carousel" 
@@ -48,7 +50,7 @@
         
       </v-sheet>
     </v-carousel-item>
-  </v-carousel>
+  </v-carousel> -->
 
   <data-table-wrapper
     :data="model"
@@ -195,6 +197,12 @@ export default {
       this.loading = false
     }, 1000);
   },
+  methods: {
+    logout() {
+      this.$auth.logout()
+      this.$router.push({ path: '/login' })
+    }
+  }
 };
 </script>
 

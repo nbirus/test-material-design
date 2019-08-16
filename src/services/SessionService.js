@@ -1,97 +1,71 @@
+import idleTimeout from 'idle-timeout'
+import router from '@/router'
+import { truthy } from '@/services/CommonsService'
+import { get } from 'lodash'
 
-// timings
-const warningMinutes = 28
-const expirationMinutes = 2
-
-// callbacks
-let warningCallback = null
-let expirationCallback = null
-
-// timeouts
-let warningTimeout = null
-let expirationTimeout = null
+let componentIdleCallback = null
+let componentExpiredCallback = null
+let componentOutsideExpired = null
+let sessionOptions = {
+  element: document,
+  timeout: 28 * 60 * 1000,
+  loop: false,
+}
 
 
-export function initSession(onWarning, onExpiration) {
+/////////////////////
+// create idle session
+const session = idleTimeout(onSessionIdle, sessionOptions)
 
-  // set up callbacks
-  warningCallback = onWarning 
-  expirationCallback = onExpiration
-  window.addEventListener('mousedown', onInteraction)
-  window.addEventListener('keydown', onInteraction)
 
-  // eslint-disable no-constant-condition
-  if (/*@cc_on!@*/false) {
-    document.onfocusin = onInteraction
+/////////////////////
+// exposed functions
+export function createSession(idleCb, expiredCb, outsideCb) {
+  componentIdleCallback = idleCb
+  componentExpiredCallback = expiredCb
+  componentExpiredCallback = expiredCb
+  componentOutsideExpired = outsideCb
+
+  if (/*@cc_on!@*/false) { // check for Internet Explorer
+    document.onfocusin = onTabFocus
   } else {
-    window.onfocus = onInteraction
+    window.onfocus = onTabFocus
   }
 
-  // begin session
-  startWarningCountDown()
-
+  session.reset()
+}
+export function resetSession() {
+  refreshSession().catch(componentExpiredCallback)
 }
 export function destroySession() {
+  session.destroy()
+}
 
-  clearTimeouts()
 
-  window.removeEventListener('mousedown', onInteraction)
-  window.removeEventListener('keydown', onInteraction)
-
-  // eslint-disable no-constant-condition
-  if (/*@cc_on!@*/false) {
-    document.onfocusin = null
-  } else {
-    window.onfocus = null
+/////////////////////
+// events
+function onSessionIdle() {
+  if (shouldShowWarning()) {
+    componentIdleCallback()
   }
 }
-export function clearWarning() {
-  startWarningCountDown()
-}
-
-function onInteraction() {
-  if (interactionValid()) {
-
-    // restart warning countdown
-    startWarningCountDown()
-
-    // check for session, expire if errored
-    refreshSession().catch(expirationCallback)
-
+function onTabFocus() {
+  if (getLocalToken() === null && routeRequiresAuth()) {
+    componentOutsideExpired()
   }
 }
-function startWarningCountDown() {
-  clearTimeouts()
-  // warningTimeout = setTimeout(startExpirationCountDown, warningMinutes * 1000 * 60)
-  warningTimeout = setTimeout(startExpirationCountDown, 3000)
-}
-function startExpirationCountDown() {
-  warningCallback()
-  if (expirationTimeout !== null) {
-    clearTimeout(expirationTimeout)
-  }
-  // expirationTimeout = setTimeout(expirationCallback, expirationMinutes * 1000 * 60)
-  expirationTimeout = setTimeout(expirationCallback, 3000)
-}
-function clearTimeouts() {
-  if (warningTimeout !== null) {
-    clearTimeout(warningTimeout)
-  }
-  if (expirationTimeout !== null) {
-    clearTimeout(expirationTimeout)
-  }
-}
-function interactionValid() {
-  console.log(window.localStorage.getItem('okta-token-storage'));
-  return true
-}
 
-// refreshing session
+
+/////////////////////
+// helpers
+function shouldShowWarning() {
+  return getLocalToken() !== null && routeRequiresAuth()
+}
 function refreshSession() {
   const url = process.env.NODE_ENV === 'development' ? 'oktapreview' : 'okta'
   return new Promise(async (resolve, reject) => {
     try {
-      await getSession(url)
+      await getSession(url) // due to a bug in okta, '/me' alone will refresh the token
     }
     catch(error) {
       reject(error);
@@ -108,9 +82,13 @@ async function getSession(url) {
       if (!res.ok) {
         reject()
       }
-      else {
-        resolve(res.json())
-      }
     })
   })
+}
+function getLocalToken() {
+  let token = JSON.parse(window.localStorage.getItem('okta-token-storage'))
+  return truthy(token) ? token : null
+}
+function routeRequiresAuth() {
+  return get(router, 'app.$route.meta.requiresAuth', false)
 }

@@ -1,0 +1,69 @@
+// This file contains scss overrides for specific components
+
+.v-toolbar {
+  box-shadow: none;
+}
+
+
+////////////////////////
+// page
+.theme--light.v-application {
+  background-color: white;
+}
+
+////////////////////////
+// table
+.v-data-table-header th {
+  border-bottom-color: black;
+}
+
+/////////////////////
+// carousel
+.v-window__prev,
+.v-window__next {
+  height: 30px;
+  width: 30px;
+  transform: scale(2);
+
+  .v-btn__content {
+    height: 30px;
+    width: 30px;
+  }
+  i {
+    transform: scale(.3);
+  }
+}
+.v-window--show-arrows-on-hover:hover .v-window__next,
+.v-window--show-arrows-on-hover:hover .v-window__prev {
+  transform: scale(2) translateX(0);
+}
+.v-window--show-arrows-on-hover {
+  .v-carousel__controls {
+    transform: translateY(50px);
+    transition: transform .5s ease;
+  }
+}
+.v-window--show-arrows-on-hover:hover {
+  .v-carousel__controls {
+    transform: translateY(0px);
+  }
+}
+
+
+/////////////////////
+// fade
+.fade-enter {
+  opacity: 0;
+}
+.fade-enter-active {
+  transition: opacity .3s cubic-bezier(0, .47, .22, 1.01);
+}
+.fade-enter-to, .fade-leave {
+  opacity: 1;
+}
+.fade-leave-active {
+  transition: opacity .3s cubic-bezier(.7, 0, 1, .33);
+}
+.fade-leave-to {
+  opacity: 0;
+}

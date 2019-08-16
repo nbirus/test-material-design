@@ -1,5 +1,3 @@
-
-
 <script>
 import DefaultLoading from './Loading'
 import DefaultError from './Error'

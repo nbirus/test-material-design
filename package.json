@@ -11,9 +11,13 @@
   "dependencies": {
     "@okta/okta-vue": "^1.1.0",
     "axios": "^0.19.0",
+    "badc-styleguide": "^0.6.6",
     "core-js": "^2.6.5",
     "deepmerge": "^4.0.0",
     "fibers": "^4.0.1",
+    "idle-session-timeout": "^1.0.1",
+    "idle-timeout": "^2.0.1",
+    "moment": "^2.24.0",
     "node-sass": "^4.12.0",
     "simple-web-worker": "^1.2.0",
     "typy": "^3.1.0",

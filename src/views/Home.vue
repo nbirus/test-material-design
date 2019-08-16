@@ -1,7 +1,20 @@
 <template>
   <div class="test">
 
-    <v-btn @click="logout">Logout</v-btn>
+  <v-btn color="red" @click="logout">Logout</v-btn>
+
+  <br>
+  <br>
+  <br>
+
+  <!-- <filter-bar 
+    id="home-form"
+    :form="form"
+    v-model="formModel"
+    persist
+    submitOnMount
+    submitOnChange
+  /> -->
 
     <!-- <form-builder 
       id="home-form"
@@ -52,11 +65,11 @@
     </v-carousel-item>
   </v-carousel> -->
 
-  <data-table-wrapper
+  <!-- <data-table-wrapper
     :data="model"
     :params="{ _keyword: name, ...formModel }"
     :headers="headers"
-  />
+  /> -->
   
     <!-- <state-handler :loading="loading" :error="''">
       <div key="loading" slot="loading">LOADING</div>
@@ -69,30 +82,50 @@
 
 <script>
 import DataTableWrapper from '../components/table/wrappers/DataTableWrapper'
-import FormBuilder from '../components/form/FormBuilder'
+import FormBuilder from '@/components/form/FormBuilder'
+import FilterBar from '@/components/filter-bar/FilterBar'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
     DataTableWrapper,
     FormBuilder,
+    FilterBar,
   },
   data: () => ({
     form: [
       {
         type: 'text-field',
-        id: 'name',
+        id: 'carbs',
         props: {
-          label: 'Email',
-          placeholder: 'Enter a keyword',
+          label: 'carbs',
+          placeholder: 'carbs',
           rules: [
             v => (v.length <= 10) || 'Name must be less than 10 characters',
           ],
         },
       },
+      {
+        type: 'text-field',
+        id: 'protien',
+        props: {
+          label: 'protien',
+          placeholder: 'Enter a Input 2',
+        },
+      },
+      {
+        type: 'text-field',
+        id: 'iron',
+        props: {
+          label: 'iron',
+          placeholder: 'iron',
+        },
+      },
     ],
     formModel: {
-      name: '',
+      carbs: '',
+      protien: '',
+      iron: '',
     },
     loading: true,
     headers: [
@@ -207,6 +240,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+// Get Colors
+/*
+
+  // theme colors
+  map-get($primary, 'base')
+  map-get($secondary, 'base')
+
+  // colors
+  map-get($blue, 'base')
+  map-get($blue, 'lighten-1')
+  ...
+
+*/
+
 .test {
   padding: 3rem;
 }

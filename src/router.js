@@ -14,6 +14,13 @@ const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
+
+    //////////////////////////////
+    // DEFAULT ROUTES
+    {
+      path: '*',
+      redirect: '/not-found',
+    },
     {
       path: '/',
       redirect: '/dashboard',
@@ -23,6 +30,17 @@ const router = new Router({
       component: Auth.handleCallback() 
     },
     {
+      path: '/login',
+      name: 'login',
+      component: () => import(/* webpackChunkName: "DashboardPage" */ '@/views/session/LoginPage.vue'),
+      meta: {
+        title: 'Login',
+      },
+    },
+
+    //////////////////////////////
+    // CUSTOM ROUTES
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: () => import(/* webpackChunkName: "DashboardPage" */ '@/views/Home.vue'),
@@ -31,14 +49,7 @@ const router = new Router({
         requiresAuth: true,
       },
     },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import(/* webpackChunkName: "DashboardPage" */ '@/views/session/LoginPage.vue'),
-      meta: {
-        title: 'Login',
-      },
-    },
+
   ]
 })
 

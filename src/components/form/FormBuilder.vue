@@ -1,16 +1,25 @@
 <template>
   <v-form ref="form" v-model="valid" lazy-validation>
 
-    <component 
+    <component
       v-for="field in form"
-      :is="`v-${field.type}`"
-      :id="`${id}-${field.id}-input`"
-      :key="`${id}-${field.id}-input`"
+      :is="`${field.wrapper || 'default'}-wrapper`"
+      :key="`${id}-${field.id}-wrapper`"
       v-bind="field.props"
-      v-model="modelReference[field.id]"
-    />
+    >
+
+      <component 
+        :is="`v-${field.type}`"
+        :id="`${id}-${field.id}-input`"
+        :key="`${id}-${field.id}-input`"
+        v-bind="field.props"
+        v-model="modelReference[field.id]"
+      />
+
+    </component>
 
     <v-btn
+      v-if="!hideButtons"
       :disabled="!valid"
       color="success"
       class="mr-4"
@@ -20,6 +29,7 @@
     </v-btn>
 
     <v-btn
+      v-if="!hideButtons"
       color="error"
       class="mr-4"
       @click="reset"
@@ -28,6 +38,7 @@
     </v-btn>
 
     <v-btn
+      v-if="!hideButtons"
       color="warning"
       @click="resetValidation"
     >
@@ -41,10 +52,12 @@
 import cloneDeep from 'lodash/cloneDeep'
 import { mapGetters, mapActions } from 'vuex'
 import { VTextField } from 'vuetify/lib'
+import Wrappers from './wrapper'
 
 export default {
   name: 'form-builder',
   components: {
+    ...Wrappers,
     VTextField,
   },
   props: {
@@ -53,6 +66,7 @@ export default {
     model: Object,
     submitOnChange: Boolean,
     submitOnMount: Boolean,
+    hideButtons: Boolean,
     persist: Boolean,
   },
   data() {

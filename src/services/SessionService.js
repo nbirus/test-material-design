@@ -13,16 +13,13 @@ let sessionOptions = {
 }
 
 
-/////////////////////
 // create idle session
 const session = idleTimeout(onSessionIdle, sessionOptions)
 
 
-/////////////////////
 // exposed functions
 export function createSession(idleCb, expiredCb, outsideCb) {
   componentIdleCallback = idleCb
-  componentExpiredCallback = expiredCb
   componentExpiredCallback = expiredCb
   componentOutsideExpired = outsideCb
 
@@ -42,7 +39,6 @@ export function destroySession() {
 }
 
 
-/////////////////////
 // events
 function onSessionIdle() {
   if (shouldShowWarning()) {
@@ -56,8 +52,7 @@ function onTabFocus() {
 }
 
 
-/////////////////////
-// helpers
+// utils
 function shouldShowWarning() {
   return getLocalToken() !== null && routeRequiresAuth()
 }

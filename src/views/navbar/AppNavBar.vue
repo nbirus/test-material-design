@@ -13,6 +13,9 @@
       hide-details
       label="Search"
     ></v-text-field> -->
+
+    <v-btn color="red" @click="logout">Logout</v-btn>
+
   </v-app-bar>
 </template>
 
@@ -21,6 +24,12 @@ export default {
   name: 'app-nav-bar',
   props: {
     drawer: Boolean
+  },
+  methods: {
+    logout() {
+      this.$auth.logout()
+      this.$router.push({ path: '/login' })
+    }
   }
 }
 </script>

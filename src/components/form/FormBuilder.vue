@@ -75,10 +75,6 @@ export default {
       modelReference: {},
     }
   },
-  model: {
-    prop: 'model',
-    event: 'submit',
-  },
   created() {
     if (this.persist) {
       let persistedModel = this.getModel(this.id)
@@ -101,7 +97,11 @@ export default {
     submit(model = this.modelReference) {
       if (this.$refs.form.validate()) {
 
-        // emmit result
+        // emit model
+        this.$emit('model', cloneDeep(model))
+
+        // emit result
+        // TODO: extra formatting possible
         this.$emit('submit', cloneDeep(model))
 
         // set persisted model

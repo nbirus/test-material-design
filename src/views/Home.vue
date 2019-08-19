@@ -1,33 +1,30 @@
 <template>
   <div class="test">
 
-  <v-btn color="red" @click="logout">Logout</v-btn>
-
-  <br>
-  <br>
-  <br>
-
   <!-- <filter-bar 
     id="home-form"
     :form="form"
-    v-model="formModel"
-    persist
+    :value="formModel"
     submitOnMount
     submitOnChange
   /> -->
 
-    <!-- <form-builder 
+    <form-builder 
       id="home-form"
       :form="form"
-      v-model="formModel"
-      persist
+      :model="formModel"
       submitOnMount
       submitOnChange
-    /> -->
+      @
+    />
 
   <br>
   <br>
   <br>
+
+  <pre>
+    {{formModel}}
+  </pre>
 
   <!-- <v-text-field v-model="name" outlined label="Keyword" style="width: 200px"/>
   <v-carousel 
@@ -86,6 +83,8 @@ import FormBuilder from '@/components/form/FormBuilder'
 import FilterBar from '@/components/filter-bar/FilterBar'
 import { mapGetters, mapActions } from 'vuex'
 
+import Test from '@/data/forms/Test'
+
 export default {
   components: {
     DataTableWrapper,
@@ -93,35 +92,7 @@ export default {
     FilterBar,
   },
   data: () => ({
-    form: [
-      {
-        type: 'text-field',
-        id: 'carbs',
-        props: {
-          label: 'carbs',
-          placeholder: 'carbs',
-          rules: [
-            v => (v.length <= 10) || 'Name must be less than 10 characters',
-          ],
-        },
-      },
-      {
-        type: 'text-field',
-        id: 'protien',
-        props: {
-          label: 'protien',
-          placeholder: 'Enter a Input 2',
-        },
-      },
-      {
-        type: 'text-field',
-        id: 'iron',
-        props: {
-          label: 'iron',
-          placeholder: 'iron',
-        },
-      },
-    ],
+    form: Test,
     formModel: {
       carbs: '',
       protien: '',
@@ -141,7 +112,6 @@ export default {
           'orange',
         ],
     name: '',
-    
     model: [
       {
         name: 'Frozen Yogurt',
@@ -230,12 +200,6 @@ export default {
       this.loading = false
     }, 1000);
   },
-  methods: {
-    logout() {
-      this.$auth.logout()
-      this.$router.push({ path: '/login' })
-    }
-  }
 };
 </script>
 

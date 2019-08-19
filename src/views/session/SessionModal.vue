@@ -1,5 +1,7 @@
 <template>
   <v-dialog v-model="visible" width="500" persistent>
+
+    <!-- warning message -->
     <v-card v-if="warning">
       <v-card-title class="headline">Session about to expire!</v-card-title>
       <v-card-text>You will be signed out in {{timeRemaining}}</v-card-text>
@@ -8,22 +10,27 @@
         <v-btn @click="clearWarning">Stay singed in</v-btn>
       </v-card-actions>
     </v-card>
-    <v-card v-else-if="!outsideExpiration">
-      <v-card-title class="headline">Session has expired!</v-card-title>
-      <v-card-text>Please log back in to continue using website</v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn @click="$auth.loginRedirect('/')">Log back in</v-btn>
-      </v-card-actions>
-    </v-card>
-    <v-card v-else>
-      <v-card-title class="headline">You've logged out</v-card-title>
-      <v-card-text>Please log back in to continue using website (logged out in another tab)</v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn @click="$auth.loginRedirect('/')">Log back in</v-btn>
-      </v-card-actions>
-    </v-card>
+
+    <!-- expiration message -->
+    <div v-else-if="expiration || outsideExpiration">
+      <v-card v-if="expiration">
+        <v-card-title class="headline">You've logged out</v-card-title>
+        <v-card-text>Please log back in to continue using website (logged out in another tab)</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="$auth.loginRedirect('/')">Log back in</v-btn>
+        </v-card-actions>
+      </v-card>
+      <v-card v-else-if="outsideExpiration">
+        <v-card-title class="headline">Session has expired!</v-card-title>
+        <v-card-text>Please log back in to continue using website</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="$auth.loginRedirect('/')">Log back in</v-btn>
+        </v-card-actions>
+      </v-card>
+    </div>
+
   </v-dialog>
 </template>
 
@@ -67,9 +74,11 @@ export default {
       this.$auth.logout()
     },
     onOutsideExpired() {
-      this.visible = true
-      this.warning = false
-      this.outsideExpiration = true
+      if (!this.expiration) {
+        this.visible = true
+        this.warning = false
+        this.outsideExpiration = true
+      }
     },
     clearWarning() {
       this.visible = false

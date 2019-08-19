@@ -9,10 +9,9 @@
     <!-- pill button -->
     <template v-slot:activator="{ on }">
       <v-btn 
-        outlined
         class="mr-3"
-        color="primary" 
-        dark 
+        depressed
+        rounded
         v-on="on" 
         v-html="label"
       />

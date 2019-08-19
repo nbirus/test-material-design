@@ -1,88 +1,71 @@
 <template>
   <v-form ref="form" v-model="valid" lazy-validation>
 
+    <!-- wrapper -->
     <component
-      v-for="field in form"
+      v-for="field in schema"
       :is="`${field.wrapper || 'default'}-wrapper`"
       :key="`${id}-${field.id}-wrapper`"
+      :active="activeFieldsComputed.includes(field.id)"
       v-bind="field.props"
     >
 
+      <!-- field -->
       <component 
         :is="`v-${field.type}`"
         :id="`${id}-${field.id}-input`"
         :key="`${id}-${field.id}-input`"
         v-bind="field.props"
-        v-model="modelReference[field.id]"
+        v-model="modelRef[field.id]"
       />
 
     </component>
-
-    <v-btn
-      v-if="!hideButtons"
-      :disabled="!valid"
-      color="success"
-      class="mr-4"
-      @click="submit(modelReference)"
-    >
-      Validate
-    </v-btn>
-
-    <v-btn
-      v-if="!hideButtons"
-      color="error"
-      class="mr-4"
-      @click="reset"
-    >
-      Reset Form
-    </v-btn>
-
-    <v-btn
-      v-if="!hideButtons"
-      color="warning"
-      @click="resetValidation"
-    >
-      Reset Validation
-    </v-btn>
 
   </v-form>
 </template>
 
 <script>
-import cloneDeep from 'lodash/cloneDeep'
 import { mapGetters, mapActions } from 'vuex'
-import { VTextField } from 'vuetify/lib'
-import Wrappers from './wrapper'
+import Fields from './fields'
+import Wrappers from './wrappers'
+import cloneDeep from 'lodash/cloneDeep'
 
 export default {
   name: 'form-builder',
   components: {
+    ...Fields,
     ...Wrappers,
-    VTextField,
   },
   props: {
     id: String,
-    form: Array,
+    form: Object,
     model: Object,
+    activeFields: Array,
     submitOnChange: Boolean,
     submitOnMount: Boolean,
-    hideButtons: Boolean,
+    isFormValid: Boolean,
     persist: Boolean,
   },
   data() {
     return {
       valid: false,
-      modelReference: {},
+      schema: [],
+      modelRef: {},
     }
   },
+  model: {
+    prop: 'model',
+    event: 'change',
+  },
   created() {
-    if (this.persist) {
-      let persistedModel = this.getModel(this.id)
-      this.modelReference = cloneDeep(persistedModel || this.model)
-    }
-    else {
-      this.modelReference = cloneDeep(this.model)
-    }
+
+    // create schema and model
+    this.modelRef = this.createModel()
+    this.schema = this.createSchema()
+
+    // init model change to parent
+    this.$emit('change', this.modelRef)
+
   },
   mounted() {
     if (this.submitOnMount) {
@@ -90,42 +73,98 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('form', ['getModel'])
+    ...mapGetters('form', ['getModel']),
+
+    // use this computed property to keep track of active fields (see watcher)
+    activeFieldsComputed() {
+      return Object.keys(this.modelRef).filter(modelKey => {
+
+        const schemaField = this.getSchemaField(modelKey)
+        const value = this.modelRef[modelKey]
+
+        if (schemaField.hasOwnProperty('isActive')) {
+          return schemaField.isActive(value)
+        }
+        else {
+          return this.$h.truthy(value)
+        }
+      })
+    },
+
   },
   methods: {
-    ...mapActions('form', ['setModel']),
-    submit(model = this.modelReference) {
+    ...mapActions('form', ['setModel', 'clearForms']),
+
+    // init
+    createSchema() {
+      return this.$h.get(this.form, 'schema', [])
+    },
+    createModel() {
+      const defaultModel = cloneDeep(this.$h.get(this.form, 'model', {}))
+      if (this.persist) {
+        let persistedModel = this.getModel(this.id)
+        return cloneDeep(persistedModel || defaultModel)
+      }
+      else {
+        return defaultModel
+      }
+    },
+
+    // actions
+    submit() {
       if (this.$refs.form.validate()) {
 
-        // emit model
-        this.$emit('model', cloneDeep(model))
+        // get valid model
+        const model = cloneDeep(this.modelRef)
+        const transform = this.$h.get(this.form, 'transform', m => m)
 
-        // emit result
-        // TODO: extra formatting possible
-        this.$emit('submit', cloneDeep(model))
+        // emit transformed result
+        this.$emit('submit', transform(model))
 
         // set persisted model
         if (this.persist) {
           this.setModel({ id: this.id, model })
         }
+
       }
     },
     reset() {
       this.$refs.form.reset()
+      this.modelRef = cloneDeep(this.$h.get(this.form, 'model', {}))
+      this.$emit('change', this.modelRef)
     },
     resetValidation() {
       this.$refs.form.resetValidation()
     },
+
+    // utils
+    getSchemaField(id) {
+      return this.schema.find(field => field.id === id)
+    },
+
   },
   watch: {
-    'modelReference': {
-      handler(model) {
+    'modelRef': {
+      handler() {
         if (this.submitOnChange) {
-          this.submit(model)
+          this.submit()
         }
       },
       deep: true,
-    }
-  }
+    },
+    'valid': {
+      handler(valid) {
+        this.$emit('update:isFormValid', valid)
+      },
+      immediate: true,
+    },
+    'activeFieldsComputed': {
+      handler(activeFields) {
+        this.$emit('update:activeFields', activeFields)
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
 }
 </script>

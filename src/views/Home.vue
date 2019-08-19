@@ -1,24 +1,45 @@
 <template>
   <div class="test">
 
-  <!-- <filter-bar 
+  <filter-bar
     id="home-form"
     :form="form"
-    :value="formModel"
-    submitOnMount
-    submitOnChange
+    @submit="onSubmit"
+  /> 
+
+  <!-- <form-builder 
+    id="home-form"
+    ref="form"
+    :form="form"
+    persist
+    :is-form-valid.sync="isFormValid"
+    :activeFields.sync="activeFields"
+    v-model="formModel"
   /> -->
 
-    <form-builder 
-      id="home-form"
-      :form="form"
-      :model="formModel"
-      submitOnMount
-      submitOnChange
-      @
-    />
+  <!-- <v-btn
+    :disabled="!isFormValid"
+    color="success"
+    class="mr-4"
+    @click="$refs.form.submit()"
+  >
+    Submit
+  </v-btn>
 
-  <br>
+  <v-btn color="error" class="mr-4" @click="$refs.form.reset()">
+    Reset Form
+  </v-btn> -->
+
+  <!-- <form-builder 
+    id="home-form"
+    :form="form"
+    v-model="formModel"
+    :submitOnMount="false"
+    :submitOnChange="false"
+    @submit="onSubmit"
+    @change="onChange"
+  /> -->
+
   <br>
   <br>
 
@@ -84,6 +105,7 @@ import FilterBar from '@/components/filter-bar/FilterBar'
 import { mapGetters, mapActions } from 'vuex'
 
 import Test from '@/data/forms/Test'
+import TestColumns from '@/data/columns/Test'
 
 export default {
   components: {
@@ -93,12 +115,10 @@ export default {
   },
   data: () => ({
     form: Test,
-    formModel: {
-      carbs: '',
-      protien: '',
-      iron: '',
-    },
+    formModel: {},
     loading: true,
+    isFormValid: true,
+    activeFields: [],
     headers: [
       { text: 'Carbs', value: 'name' },
       { text: 'Protein', value: 'protein' },
@@ -112,94 +132,22 @@ export default {
           'orange',
         ],
     name: '',
-    model: [
-      {
-        name: 'Frozen Yogurt',
-        calories: 159,
-        fat: 6.0,
-        carbs: 24,
-        protein: 4.0,
-        iron: '1%',
-      },
-      {
-        name: 'Ice cream sandwich',
-        calories: 237,
-        fat: 9.0,
-        carbs: 37,
-        protein: 4.3,
-        iron: '1%',
-      },
-      {
-        name: 'Eclair',
-        calories: 262,
-        fat: 16.0,
-        carbs: 23,
-        protein: 6.0,
-        iron: '7%',
-      },
-      {
-        name: 'Cupcake',
-        calories: 305,
-        fat: 3.7,
-        carbs: 67,
-        protein: 4.3,
-        iron: '8%',
-      },
-      {
-        name: 'Gingerbread',
-        calories: 356,
-        fat: 16.0,
-        carbs: 49,
-        protein: 3.9,
-        iron: '16%',
-      },
-      {
-        name: 'Jelly bean',
-        calories: 375,
-        fat: 0.0,
-        carbs: 94,
-        protein: 0.0,
-        iron: '0%',
-      },
-      {
-        name: 'Lollipop',
-        calories: 392,
-        fat: 0.2,
-        carbs: 98,
-        protein: 0,
-        iron: '2%',
-      },
-      {
-        name: 'Honeycomb',
-        calories: 408,
-        fat: 3.2,
-        carbs: 87,
-        protein: 6.5,
-        iron: '45%',
-      },
-      {
-        name: 'Donut',
-        calories: 452,
-        fat: 25.0,
-        carbs: 51,
-        protein: 4.9,
-        iron: '22%',
-      },
-      {
-        name: 'KitKat',
-        calories: 518,
-        fat: 26.0,
-        carbs: 65,
-        protein: 7,
-        iron: '6%',
-      },
-    ],
+    model: TestColumns,
   }),
   mounted() {
     setTimeout(() => {
       this.loading = false
     }, 1000);
   },
+  methods: {
+    onSubmit(model) {
+      this.formModel = model
+      console.log('submit', JSON.stringify(model));
+    },
+    onChange() {
+      console.log('change');
+    },
+  }
 };
 </script>
 

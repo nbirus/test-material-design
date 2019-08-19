@@ -1,37 +1,38 @@
 <template>
-  <div class="filter-bar">
+  <div class="v-filter-bar">
 
+    <!-- form chips -->
     <form-builder
-      :form="form"
-      v-bind="$attrs"
-      hide-buttons
+      class="v-filter-bar-chip-form"
+      :id="id"
+      :key="aside"
+      :form="chipForm"
+      persist
+      submit-on-change
+      :active-fields.sync="activeFields"
+      @submit="onSubmit"
     />
 
-    <!-- form -->
-    <!-- <form-builder
-      :form="menuForm"
-      v-bind="$attrs"
-      hide-buttons
-    /> -->
-
     <!-- all filters toggle -->
-    <!-- <v-btn 
-      class="mr-3"
+    <v-btn 
+      class="v-filter-bar-aside-toggle chip-button"
+      :class="{ active: activeFields.length }"
       depressed
       rounded
       @click="aside=true"
     >
       All Filters
-    </v-btn> -->
+      <span v-if="activeFields.length" v-html="activeFields.length"></span>
+    </v-btn>
 
-    <!-- aside form -->
-    <!-- <v-navigation-drawer
+    <!-- aside -->
+    <v-navigation-drawer
       class="pa-5"
       v-model="aside"
       absolute
       temporary
       right
-      width="300"
+      width="350"
     >
 
       <div class="header d-flex">
@@ -44,13 +45,17 @@
 
       <v-divider class="my-4" />
 
+      <!-- aside form -->
       <form-builder
+        :id="id"
+        :key="aside"
         :form="form"
-        v-bind="$attrs"
-        hide-buttons
+        persist
+        submit-on-change
+        @submit="onSubmit"
       />
 
-    </v-navigation-drawer> -->
+    </v-navigation-drawer>
 
   </div>
 </template>
@@ -68,25 +73,43 @@ export default {
     event: 'submit',
   },
   props: {
-    form: Array,
-    model: Object,
+    id: String,
+    form: Object,
   },
   data() {
     return {
-      aside: true,
-      menuForm: [],
-      value: {},
+      aside: false,
+      chipForm: [],
+      activeFields: [],
     }
   },
   created() {
-    this.menuForm = this.form.map(field => ({
-      ...field,
-      wrapper: 'menu',
-    }))
+    this.chipForm = this.$h.cloneDeep(this.form)
+    this.chipForm.schema.forEach(field => {
+      field.wrapper = 'chip'
+    })
+  },
+  methods: {
+    onSubmit(model) {
+      this.$emit('submit', model)
+    },
   },
 }
 </script>
 
-<style>
+<style lang="scss">
+
+.v-filter-bar {
+  display: flex;
+}
+.v-filter-bar-chip-form {
+  flex: 0 0 auto;
+}
+.v-filter-bar-aside-toggle {
+  flex: 0 0 auto;
+}
+.form-builder-field.active, .chip-button.active {
+  border: solid thin red;
+}
 
 </style>

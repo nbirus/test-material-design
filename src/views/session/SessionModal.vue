@@ -14,14 +14,6 @@
     <!-- expiration message -->
     <div v-else-if="expiration || outsideExpiration">
       <v-card v-if="expiration">
-        <v-card-title class="headline">You've logged out</v-card-title>
-        <v-card-text>Please log back in to continue using website (logged out in another tab)</v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn @click="$auth.loginRedirect('/')">Log back in</v-btn>
-        </v-card-actions>
-      </v-card>
-      <v-card v-else-if="outsideExpiration">
         <v-card-title class="headline">Session has expired!</v-card-title>
         <v-card-text>Please log back in to continue using website</v-card-text>
         <v-card-actions>
@@ -29,6 +21,15 @@
           <v-btn @click="$auth.loginRedirect('/')">Log back in</v-btn>
         </v-card-actions>
       </v-card>
+      <v-card v-else-if="outsideExpiration">
+        <v-card-title class="headline">You've logged out</v-card-title>
+        <v-card-text>Please log back in to continue using website (logged out in another tab)</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="$auth.loginRedirect('/')">Log back in</v-btn>
+        </v-card-actions>
+      </v-card>
+
     </div>
 
   </v-dialog>

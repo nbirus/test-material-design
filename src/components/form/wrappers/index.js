@@ -1,7 +1,7 @@
 import DefaultWrapper from './DefaultWrapper'
-import MenuWrapper from './MenuWrapper'
+import ChipWrapper from './ChipWrapper'
 
 export default {
   DefaultWrapper,
-  MenuWrapper,
+  ChipWrapper,
 }

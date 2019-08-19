@@ -9,7 +9,8 @@
     <!-- pill button -->
     <template v-slot:activator="{ on }">
       <v-btn 
-        class="mr-3"
+        class="chip-button mr-3"
+        :class="{ active }"
         depressed
         rounded
         v-on="on" 
@@ -31,10 +32,7 @@ export default {
   inheritAttrs: false,
   props: {
     label: String,
+    active: Boolean,
   }
 }
 </script>
-
-<style>
-
-</style>
